@@ -1,5 +1,23 @@
 # 实验记录
 
+## Todo List
+
+##### May 24th
+
+- [ ] DataLoader and vocab process
+- [ ] LSTM - CRF (Feature functions: $\varphi(y_i, y_{i+1}), \varphi(x_i, y_i)$)
+- [ ] Config loss or F1-score of NER in evaluation 
+
+##### May 25th
+
+- [ ] MESLoss with CrossEntropyLoss
+- [ ] Try BERT model
+- [ ] Solve the imbalance problem between classes
+    -  SVM for classical models or Hinge loss for deep learning models. When I use standard cross entropy loss, its a nightmare to try and get the weights right [Reddit src](https://www.reddit.com/r/LanguageTechnology/comments/oun69p/comment/h73pmgv/?utm_source=share&utm_medium=web2x&context=3`)
+    - (1) tinker with loss function, (2) tinker with learning rate, and (3) tinker with sampling usually gets me out of the "always predicts outside" pit [Reddit src](https://www.reddit.com/r/LanguageTechnology/comments/oun69p/comment/h768ebu/?utm_source=share&utm_medium=web2x&context=3)
+- [ ] Figure out which framework is better, BIO labels or BIO + multi-classification on entities
+- [ ] Can use Softmax as Decoder instead of CRF layer
+
 ## 理论部分
 
 #### 简单想法
@@ -37,8 +55,14 @@ with $\bm{P} \in \mathbb{R}^{|T|\times|T|}$(tags to tags)
 > Supervised Training
 
 - MESLoss(given_tags, viterbi_inferred_tags)
+- [FBetaScore](https://www.tensorflow.org/addons/api_docs/python/tfa/metrics/FBetaScore)
+    $$
+        F_\beta = (1 + \beta^2) * \frac{precision * recall}{(\beta^2\cdot precision) + recall}
+    $$
 
 ## 实现
+
+- Train Set 40,000, Test Set 4,700
 
 #### bi-LSTM + CRF
 
