@@ -12,7 +12,7 @@
 - [ ] Config loss or F1-score of NER in evaluation 
 - [ ] MESLoss with CrossEntropyLoss
 - [ ] Try BERT model
-- [ ] Solve the imbalance problem between classes
+- [x] Solve the imbalance problem between classes
     -  SVM for classical models or Hinge loss for deep learning models. When I use standard cross entropy loss, its a nightmare to try and get the weights right [Reddit src](https://www.reddit.com/r/LanguageTechnology/comments/oun69p/comment/h73pmgv/?utm_source=share&utm_medium=web2x&context=3`)
     - (1) tinker with loss function, (2) tinker with learning rate, and (3) tinker with sampling usually gets me out of the "always predicts outside" pit [Reddit src](https://www.reddit.com/r/LanguageTechnology/comments/oun69p/comment/h768ebu/?utm_source=share&utm_medium=web2x&context=3)
 - [ ] Figure out which framework is better, BIO labels or BIO + multi-classification on entities

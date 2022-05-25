@@ -30,6 +30,8 @@ class NERDataSet:
         # TODO: Tags to id
         tags = ['O'] + [pos + '-' + tag for pos in ['B', 'I'] for tag in TAGS]
         self.tag2id = {tag: i for i, tag in enumerate(tags)}
+        self.id2tag = {i: tag for i, tag in enumerate(tags)}
+
         self.word2id['<pad>'] = len(self.word2id)
         self.word2id['<unk>'] = len(self.word2id) + 1
 
@@ -61,6 +63,9 @@ class NERDataSet:
     @property
     def target_size(self):
         return len(self.tag2id)
+
+    def getTag(self, tagId):
+        return self.id2tag(tagId)
 
     def build_dataSets(self):
 

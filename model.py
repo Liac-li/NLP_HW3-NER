@@ -26,9 +26,12 @@ class BiRNN_NER(nn.Module):
     def loss(self, x, tags, mask):
         # TODO: handle mask
         
-        vec_tags = torch.zeros(x.shape[0], x.shape[1], self.target_size).to(x.device) 
-        vec_tags[tags] = 1
+        vec_tags = F.one_hot(tags, num_classes=self.target_size).to(tags.device)
+        vec_tags = torch.permute(vec_tags, (0, 2, 1))
         
         out = self.forward(x, mask)
-        loss = self.loss_func(torch.permute(out, (0, 2, 1)), torch.permute(vec_tags, (0, 2, 1)))
+        out = torch.permute(out, (0, 2, 1))
+        # print(out.size(), vec_tags.size())
+        loss = self.loss_func(out, tags)
         return loss
+
