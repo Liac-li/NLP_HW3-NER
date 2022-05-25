@@ -1,4 +1,5 @@
 from cmath import exp
+from operator import is_
 import os
 import pandas as pd
 import numpy as np
@@ -52,6 +53,14 @@ class NERDataSet:
                 json.dump(word2idx, f)
 
         return word2idx
+    
+    @property
+    def vocab_size(self):
+        return len(self.word2id)
+    
+    @property
+    def target_size(self):
+        return len(self.tag2id)
 
     def build_dataSets(self):
 
@@ -157,6 +166,22 @@ class NERDataSet:
                 with open(os.path.join(self.save_path, file + '.npy'),
                           'wb') as fw:
                     np.save(fw, nparrays[idx])
+
+class NERDSWrapper:
+    def __init__(self, ds_x, ds_y, ds_mask, is_test=False):
+        self.x = ds_x
+        self.y = ds_y
+        self.mask = ds_mask
+        self.is_test = is_test
+        
+    def __getitem__(self, idx):
+        if self.is_test:
+            return self.x[idx], self.mask[idx]
+
+        return self.x[idx], self.y[idx], self.mask[idx]
+    
+    def __len__(self):
+        return len(self.x)
 
 
 if __name__ == '__main__':

@@ -4,12 +4,12 @@
 
 ##### May 24th
 
-- [ ] DataLoader and vocab process
-- [ ] LSTM - CRF (Feature functions: $\varphi(y_i, y_{i+1}), \varphi(x_i, y_i)$)
-- [ ] Config loss or F1-score of NER in evaluation 
+- [x] DataLoader and vocab process
 
 ##### May 25th
 
+- [ ] LSTM - CRF (Feature functions: $\varphi(y_i, y_{i+1}), \varphi(x_i, y_i)$)
+- [ ] Config loss or F1-score of NER in evaluation 
 - [ ] MESLoss with CrossEntropyLoss
 - [ ] Try BERT model
 - [ ] Solve the imbalance problem between classes
@@ -44,7 +44,7 @@ $$
     \end{aligned}
 $$
 
-with $\bm{P} \in \mathbb{R}^{|T|\times|T|}$(tags to tags)
+with $\mathbf{P} \in \mathbb{R}^{|T|\times|T|}$(tags to tags)
 
 > Score function in General CRF is conclude a weight $Score(x, y) = \sum_{k} w_k \phi_k(x, y)$
 
