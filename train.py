@@ -1,5 +1,6 @@
 import argparse
 from numpy import argmax
+import numpy as np
 import torch
 from torch.utils.data import DataLoader
 import torch.optim as optim
@@ -9,6 +10,7 @@ import pandas as pd
 from dataProc import NERDataSet, NERDSWrapper 
 from model import BiRNN_NER
 from colorUtil import set_color, COLOR
+from myUtils import f1_score
 
 
 def getArgs():
@@ -70,7 +72,8 @@ if __name__ == '__main__':
     
     # Train
     model.to(DEVICE)
-    best_val = 1e4 
+    best_val = 1e4
+    best_epoch = 0
 
     if not args.just_eval:
         for epoch in range(args.epochs): 
@@ -87,13 +90,24 @@ if __name__ == '__main__':
 
             # Validate
             model.eval()
+            print(set_color('Evaluate the Model with macro f1', COLOR.GREEN))
             with torch.no_grad():
                 # TODO: implement F1-Score
-                ...
-
+                bar = tqdm.tqdm(valid_dl)
+                f1_scores = []
+                for bi, (x, y, mask) in enumerate(bar):
+                    y_pred = model.forward(x, mask)
+                    tmp_f1 = f1_score(y_pred, y)
+                    f1_scores.append(tmp_f1)
+                cur_val = np.mean(f1_scores) 
+                if cur_val > best_val:
+                    best_val = cur_val
+                    best_epoch = epoch
             # Save Model  
             res = SLModel(model, args.save_dir, epoch, mode='save')
     
+    print(set_color(f"Best Epoch is {best_epoch} with f1 as {best_val}", COLOR.GREEN))
+
     # Predict Test set
     bar = tqdm.tqdm(test_dl)
     test_tags = []
