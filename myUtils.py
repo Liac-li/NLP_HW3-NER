@@ -1,4 +1,6 @@
 from html.entities import entitydefs
+from regex import E
+from sklearn.decomposition import LatentDirichletAllocation
 import torch
 import numpy as np
 import threading
@@ -22,7 +24,7 @@ def f1_score(y_pred:torch.Tensor, y_true:torch.Tensor, outer=0):
     
     # Compute precision and recall
     batch = y_pred.shape[0]
-    thread_num = 3
+    thread_num = 8
     y_preds = np.array_split(y_pred, thread_num)
     y_trues = np.array_split(y_true, thread_num)
 
@@ -60,8 +62,9 @@ def _multi_f1(y_pred, y_true, results, thread_id):
     
     def sen_count(y_pred, y_true):
         s = 0; g = 0; correct = 0 
-        matching = False
-        last_entity = None
+
+        state = 0 # O -> illegal; 1 -> maybe right
+        last_tag = None
         for pos, entity in enumerate(y_true):
             last_entity = entity if last_entity is None else last_entity
             if is_begin(entity):
@@ -70,15 +73,23 @@ def _multi_f1(y_pred, y_true, results, thread_id):
                 g += 1
 
             # matching ?
+            cur_ture_tag = (entity - 1) // 2 
+            cur_prdct_tag = (y_pred[pos] - 1) // 2
 
-            if entity != y_pred[pos] or entity != last_entity:
-                if matching:
-                    matching = False
+            entity_same = True if entity == y_pred[pos] else False
+
+            if state == 0:
+                if entity_same and is_begin(entity):
+                    state = 1
+            elif state == 1:
+                if entity == y_pred[pos] and is_begin(entity):
                     correct += 1
-            else:
-                matching = False
-
-            matching = True if is_begin(entity) and entity == y_pred[pos] else matching
+                elif entity == y_pred[pos] == 0:
+                    correct += 1
+                elif cur_ture_tag == cur_prdct_tag and cur_prdct_tag == last_tag and entity_same:
+                    state = 1
+                else:
+                    state = 0     
                 
         return s, g, correct
     
