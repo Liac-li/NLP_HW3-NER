@@ -45,7 +45,7 @@ if __name__ == '__main__':
     DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # Load Data
-    ds_ner = NERDataSet(args.data_dir)
+    ds_ner = NERDataSet(args.data_dir, split_rate=0.001)
     args.vocab_size = ds_ner.vocab_size # For lstm embedding
     datas = ds_ner.build_dataSets()
     train_x, train_y, train_mask, valid_x, valid_y, valid_mask, test_x, test_mask = datas

@@ -20,6 +20,7 @@ class NERDataSet:
         self.data_path = data_path
         self.vocab_file = os.path.join(self.data_path, 'vocab2id.json')
         self.save_path = 'results'
+        self.split_rate = split_rate
 
         if not os.path.exists(self.vocab_file):
             self.word2id = self.build_vocab(saveVocab)
@@ -84,8 +85,8 @@ class NERDataSet:
 
         # Try load saved data
         res = self.loadorSavenp()
-        if res is not None:
-            return res
+        # if res is not None:
+        #     return res
 
         # Load Sentences and Tags
         df_train = pd.read_csv(self.train_file)
@@ -102,7 +103,7 @@ class NERDataSet:
 
         # Split train set and valid set
         valid_indexes = np.random.choice(train_sentences.shape[0],
-                                         int(train_sentences.shape[0] * 0.3),
+                                         int(train_sentences.shape[0] * self.split_rate),
                                          replace=False)
         valid_sentences = train_sentences[valid_indexes, ...]
         valid_tags = train_tags[valid_indexes, ...]

@@ -9,6 +9,7 @@
 ##### May 25th
 
 - [ ] LSTM - CRF (Feature functions: $\varphi(y_i, y_{i+1}), \varphi(x_i, y_i)$)
+- [ ] Attention Layer
 - [ ] Config loss or F1-score of NER in evaluation 
 - [ ] MESLoss with CrossEntropyLoss
 - [ ] Try BERT model
