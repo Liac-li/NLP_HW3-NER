@@ -78,15 +78,15 @@ class NERDataSet:
             return res
 
         def genMask(length, maxVal, nparray, pad=self.word2id['<pad>']):
-            mask = np.zeros(length) + maxVal + 1
+            mask = np.zeros(length) + maxVal
             for row, col in np.argwhere(nparray == pad):
                 mask[row] = min(mask[row], col)
             return mask
 
         # Try load saved data
         res = self.loadorSavenp()
-        # if res is not None:
-        #     return res
+        if res is not None:
+            return res
 
         # Load Sentences and Tags
         df_train = pd.read_csv(self.train_file)

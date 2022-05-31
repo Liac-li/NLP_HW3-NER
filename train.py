@@ -26,8 +26,8 @@ def getArgs():
     parser.add_argument('--save_best', action='store_true')
     parser.add_argument('--just_eval', action='store_true')
 
-    parser.add_argument('--embed_size', type=int, default=500)
-    parser.add_argument('--hidden_size', type=int, default=500)
+    parser.add_argument('--embed_size', type=int, default=600)
+    parser.add_argument('--hidden_size', type=int, default=800)
     parser.add_argument('--rnn_layers', type=int, default=2)
 
     args = parser.parse_args()
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
     # Load Data
-    ds_ner = NERDataSet(args.data_dir, split_rate=0.001)
+    ds_ner = NERDataSet(args.data_dir, split_rate=0.1)
     args.vocab_size = ds_ner.vocab_size # For lstm embedding
     datas = ds_ner.build_dataSets()
     train_x, train_y, train_mask, valid_x, valid_y, valid_mask, test_x, test_mask = datas
@@ -67,12 +67,12 @@ if __name__ == '__main__':
 
     model = BiRNN_NER(args, ds_ner.target_size, class_weight=class_weight)
     if args.just_eval:
-        model.load_state_dict(SLModel(None, args.save_dir, 9, mode='load'))
+        model.load_state_dict(SLModel(None, args.save_dir, 26, mode='load'))
     optimizer =  optim.Adam(model.parameters(), lr=args.lr)
     
     # Train
     model.to(DEVICE)
-    best_val = 1e4
+    best_val = 1e-4
     best_epoch = 0
 
     if not args.just_eval:
@@ -93,16 +93,17 @@ if __name__ == '__main__':
             print(set_color('Evaluate the Model with macro f1', COLOR.GREEN))
             with torch.no_grad():
                 # TODO: implement F1-Score
-                bar = tqdm.tqdm(valid_dl)
                 f1_scores = []
-                for bi, (x, y, mask) in enumerate(bar):
-                    y_pred = model.forward(x, mask)
+                for bi, (x, y, mask) in enumerate(valid_dl):
+                    y_pred = model.forward(x.to(DEVICE), mask.to(DEVICE))
+                    y = y[:, :y_pred.size(1)]
                     tmp_f1 = f1_score(y_pred, y)
                     f1_scores.append(tmp_f1)
                 cur_val = np.mean(f1_scores) 
                 if cur_val > best_val:
                     best_val = cur_val
                     best_epoch = epoch
+            print(set_color(f"f1: {cur_val}/{best_val}", COLOR.GREEN))
             # Save Model  
             res = SLModel(model, args.save_dir, epoch, mode='save')
     
@@ -118,8 +119,8 @@ if __name__ == '__main__':
         for ni, tags in enumerate(tags):
             sentence_tag = []
             for pos, items in enumerate(tags):
-                if pos <=cut_indexes[ni]:
-                    sentence_tag.append(argmax(items))
+                if pos < cut_indexes[ni]:
+                    sentence_tag.append(items)
             sentence_tag = map(lambda x: ds_ner.id2tag[x], sentence_tag) 
 
             test_tags.append(' '.join(sentence_tag))

@@ -1,6 +1,3 @@
-from html.entities import entitydefs
-from regex import E
-from sklearn.decomposition import LatentDirichletAllocation
 import torch
 import numpy as np
 import threading
@@ -20,7 +17,7 @@ def f1_score(y_pred:torch.Tensor, y_true:torch.Tensor, outer=0):
     y_pred = y_pred.cpu().data.numpy()
     # y_pred = np.argmax(y_pred, axis=-1) # (batch_size, seq_len)
     y_true = y_true.cpu().data.numpy()
-    assert y_pred.shape == y_true.shape
+    assert y_pred.shape == y_true.shape, f"{y_pred.shape} {y_true.shape}"
     
     # Compute precision and recall
     batch = y_pred.shape[0]
@@ -48,7 +45,7 @@ def f1_score(y_pred:torch.Tensor, y_true:torch.Tensor, outer=0):
         total_corct += items[2]
         
         
-    print(total_g, total_s, total_corct)
+    # print(total_g, total_s, total_corct)
 
     percision = total_corct / total_s if total_s > 0 else 0
     recall = total_corct / total_g if total_g > 0 else 0
@@ -58,7 +55,7 @@ def f1_score(y_pred:torch.Tensor, y_true:torch.Tensor, outer=0):
     
 def _multi_f1(y_pred, y_true, results, thread_id):
     is_begin = lambda x: x % 2 != 0
-    print(y_pred, y_true)
+    # print(y_pred, y_true)
     
     def sen_count(y_pred, y_true):
         s = 0; g = 0; correct = 0 
@@ -66,7 +63,6 @@ def _multi_f1(y_pred, y_true, results, thread_id):
         state = 0 # O -> illegal; 1 -> maybe right
         last_tag = None
         for pos, entity in enumerate(y_true):
-            last_entity = entity if last_entity is None else last_entity
             if is_begin(entity):
                 s += 1
             if is_begin(y_pred[pos]):
@@ -86,6 +82,7 @@ def _multi_f1(y_pred, y_true, results, thread_id):
                     correct += 1
                 elif entity == y_pred[pos] == 0:
                     correct += 1
+                    state = 0
                 elif cur_ture_tag == cur_prdct_tag and cur_prdct_tag == last_tag and entity_same:
                     state = 1
                 else:

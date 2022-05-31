@@ -9,8 +9,8 @@
 ##### May 25th
 
 - [ ] LSTM - CRF (Feature functions: $\varphi(y_i, y_{i+1}), \varphi(x_i, y_i)$)
-- [ ] Attention Layer
-- [ ] Config loss or F1-score of NER in evaluation 
+- [x] Attention Layer
+- [x] Config loss or F1-score of NER in evaluation 
 - [ ] MESLoss with CrossEntropyLoss
 - [ ] Try BERT model
 - [x] Solve the imbalance problem between classes
@@ -66,6 +66,13 @@ with $\mathbf{P} \in \mathbb{R}^{|T|\times|T|}$(tags to tags)
 - Train Set 40,000, Test Set 4,700
 
 #### bi-LSTM + CRF
+
+| Model | Tech | F1-score |
+| -- | -- | -- |
+|Bi-LSTM with Softmax| | 0.7912 |
+|Bi-LSTM with Softmax| attention | 0.7900 | 
+|Bi-LSTM with Softmax| mask | 0.8014 |
+|Bi-LSTM with CRF | | |
 
 
 ## Reference 
