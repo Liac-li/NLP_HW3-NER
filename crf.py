@@ -135,17 +135,22 @@ class CRF(nn.Module):
 
         # Iterate through the sentence
         for t in range(L):
-            emit_score_t = features[:, t].unsqueeze(2)  # [B, C, 1]
+            emit_score_t = features[:, t].unsqueeze(2)  # [B, C, 1] as P(x|y)
+
             score_t = scores.unsqueeze(1) + trans + emit_score_t  # [B, 1, C] + [1, C, C] + [B, C, 1] => [B, C, C]
             score_t = log_sum_exp(score_t)  # [B, C]
-
             mask_t = masks[:, t].unsqueeze(1)  # [B, 1]
+
             scores = score_t * mask_t + scores * (1 - mask_t)
         scores = log_sum_exp(scores + self.transitions[self.stop_idx])
         return scores
     
 
 def log_sum_exp(x):
+    """
+        x:[B, C, C]
+        \log\sum \exp(x - \max(x)) = \prod \log\exp(x - \max(x))
+    """
     max_score = x.max(-1)[0]
     res = max_score + (x - max_score.unsqueeze(-1)).exp().sum(-1).log()
     return res

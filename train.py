@@ -24,7 +24,7 @@ def getArgs():
     parser.add_argument('--lr', type=float, default=0.001)
     parser.add_argument('--dropout', type=float, default=0.5)
     parser.add_argument('--save_best', action='store_true')
-    parser.add_argument('--just_eval', action='store_true')
+    parser.add_argument('--just_eval', action='store_true') # 直接导入模型参数，对 Test set 做预测
 
     parser.add_argument('--embed_size', type=int, default=600)
     parser.add_argument('--hidden_size', type=int, default=800)

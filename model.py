@@ -26,7 +26,6 @@ class BiRNN_NER(nn.Module):
     def __encode(self, x, mask):
         embeds = self.embedding(x)
         
-        # print(mask.min(), mask.max())
         packed_seq = pack_padded_sequence(embeds, mask.cpu().int(), batch_first=True, enforce_sorted=False)
         packed_out, _ = self.rnn_layer(packed_seq)
         rnn_out, seq_len_unpacked = pad_packed_sequence(packed_out, batch_first=True) 
